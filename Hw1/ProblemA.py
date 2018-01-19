@@ -93,8 +93,6 @@ class polynom(object):
                 for i in range(0, len(self.poly)):
                         copyList[i] = copyList[i] * (len(self.poly) - i - 1)
                 newList = allButLast(copyList)
-                #newPoly = polynom(newList)
-                return newList                
 
         # len operator overload
         # returns: length of self.poly
