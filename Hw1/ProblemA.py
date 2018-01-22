@@ -5,7 +5,6 @@ class polynom(object):
         # initialize method
         # sets instance variable poly to the object that was passed in.
         def __init__(self,object):
-            self.poly = checkLeading(object)
                 if(type(object) == list):
                         self.poly = checkLeading(object)
                 else:
@@ -84,8 +83,6 @@ class polynom(object):
         # returns: value of the integration
         def intg(self,a,b):
                 totalInt = 0
-                for i in range(0,len(self.poly)):
-                        totalInt += 1.0/(len(self.poly)-i) * power(b,(len(self.poly)-i)) * self.poly[i] - 1.0/(len(self.poly)-i) * power(a,(len(self.poly)-i)) *  self.poly[i]
                 if(len(self.poly) > 0):
                         for i in range(0,len(self.poly)):
                                 totalInt += 1.0/(len(self.poly)-i) * power(b,(len(self.poly)-i)) * self.poly[i] - 1.0/(len(self.poly)-i) * power(a,(len(self.poly)-i)) *  self.poly[i]
@@ -97,10 +94,6 @@ class polynom(object):
         # returns: the list of the polynomial
         def drv(self):
                 copyList = self.poly
-                for i in range(0, len(self.poly)):
-                        copyList[i] = copyList[i] * (len(self.poly) - i - 1)
-                newList = allButLast(copyList)
-                newPoly = polynom(newList)
                 if(len(self.poly) > 1):
                         for i in range(0, len(self.poly)):
                                 copyList[i] = copyList[i] * (len(self.poly) - i - 1)
@@ -129,6 +122,7 @@ def power(a,b):
 # args: a list
 # returns: the new list without leading zeroes.
 def checkLeading(list):
+        print len(list)
         if(len(list) > 1 and list[0] == 0 ):
                 newList = allButFirst(list)
                 list = checkLeading(newList)
@@ -136,6 +130,7 @@ def checkLeading(list):
         elif(len(list) == 1 and list[0] == 0):
                 return []
         else:
+                print("I GOT HER")
                 return list
 # allButFirst method
 # Takes a list and returns the tail.
