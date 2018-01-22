@@ -6,6 +6,10 @@ class polynom(object):
         # sets instance variable poly to the object that was passed in.
         def __init__(self,object):
             self.poly = checkLeading(object)
+                if(type(object) == list):
+                        self.poly = checkLeading(object)
+                else:
+                        self.poly = []
             
         # + operator overload
         # args: two polynomial lists, list1 and list2
@@ -82,6 +86,9 @@ class polynom(object):
                 totalInt = 0
                 for i in range(0,len(self.poly)):
                         totalInt += 1.0/(len(self.poly)-i) * power(b,(len(self.poly)-i)) * self.poly[i] - 1.0/(len(self.poly)-i) * power(a,(len(self.poly)-i)) *  self.poly[i]
+                if(len(self.poly) > 0):
+                        for i in range(0,len(self.poly)):
+                                totalInt += 1.0/(len(self.poly)-i) * power(b,(len(self.poly)-i)) * self.poly[i] - 1.0/(len(self.poly)-i) * power(a,(len(self.poly)-i)) *  self.poly[i]
 
                 return totalInt
                         
@@ -94,6 +101,13 @@ class polynom(object):
                         copyList[i] = copyList[i] * (len(self.poly) - i - 1)
                 newList = allButLast(copyList)
                 newPoly = polynom(newList)
+                if(len(self.poly) > 1):
+                        for i in range(0, len(self.poly)):
+                                copyList[i] = copyList[i] * (len(self.poly) - i - 1)
+                        newList = allButLast(copyList)
+                        newPoly = polynom(newList)
+                else:
+                        newPoly = polynom([])
                 return newPoly                
 
         # len operator overload
@@ -115,10 +129,12 @@ def power(a,b):
 # args: a list
 # returns: the new list without leading zeroes.
 def checkLeading(list):
-        if(list[0] == 0):
+        if(len(list) > 1 and list[0] == 0 ):
                 newList = allButFirst(list)
                 list = checkLeading(newList)
                 return list
+        elif(len(list) == 1 and list[0] == 0):
+                return []
         else:
                 return list
 # allButFirst method
