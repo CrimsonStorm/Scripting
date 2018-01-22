@@ -46,5 +46,3 @@ def checkForDupes(fileList,numBytes):
 
     return returnList
 
-l1 = filePairs('C:\Users\josep\Desktop\TestDir',3)
-print l1

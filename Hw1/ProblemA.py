@@ -122,7 +122,6 @@ def power(a,b):
 # args: a list
 # returns: the new list without leading zeroes.
 def checkLeading(list):
-        print len(list)
         if(len(list) > 1 and list[0] == 0 ):
                 newList = allButFirst(list)
                 list = checkLeading(newList)
@@ -130,7 +129,6 @@ def checkLeading(list):
         elif(len(list) == 1 and list[0] == 0):
                 return []
         else:
-                print("I GOT HER")
                 return list
 # allButFirst method
 # Takes a list and returns the tail.
@@ -175,5 +173,4 @@ def checkSmaller(list1,list2):
                 return list1
         else:
                 return list2
-
 
