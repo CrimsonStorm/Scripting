@@ -14,23 +14,25 @@ class polynom(object):
         # args: two polynomial lists, list1 and list2
         # returns: new polynomial with the new polynomial instance variable inside.
         def __add__(list1,list2):
-                copyList1 = checkBigger(list1.poly,list2.poly)
-                copyList2 = checkSmaller(list1.poly,list2.poly)
-                if(len(copyList1) == len(copyList2)):
-                        for i in range(0, len(copyList1)):
-                                copyList1[i] += copyList2[i]
+                copyList1 = list1.poly[:]
+                copyList2 = list2.poly[:]
+                copyList3 = checkBigger(copyList1,copyList2)
+                copyList4 = checkSmaller(copyList1,copyList2)
+                if(len(copyList3) == len(copyList4)):
+                        for i in range(0, len(copyList3)):
+                                copyList3[i] += copyList4[i]
                 else:
-                        for i in range(0, len(copyList2)):
-                                cl1StartPoint = len(copyList1) - len(copyList2)
-                                copyList1[cl1StartPoint+i] += copyList2[i]
-                newPoly = polynom(copyList1)
+                        for i in range(0, len(copyList4)):
+                                cl1StartPoint = len(copyList3) - len(copyList4)
+                                copyList3[cl1StartPoint+i] += copyList4[i]
+                newPoly = polynom(copyList3)
                 return newPoly
         # - operator overload
         # args: two polynomial lists, list1 and list2
         # returns: new polynomial with the new polynomial instance variable inside. 
         def __sub__(list1,list2):
-                copyList1 = list1.poly
-                copyList2 = list2.poly
+                copyList1 = list1.poly[:]
+                copyList2 = list2.poly[:]
                 if(len(copyList1) == len(copyList2)):
                         for i in range(0, len(copyList1)):
                                 copyList1[i] -= copyList2[i]
@@ -56,22 +58,24 @@ class polynom(object):
         # args: two polynomial lists, list1 and list2
         # returns: new polynomial with the new polynomial instance variable inside.
         def __mul__(list1,list2):
-                copyList1 = checkBigger(list1.poly,list2.poly)
-                copyList2 = checkSmaller(list1.poly,list2.poly)
-                if(len(copyList1) != 1) and (len(copyList2) != 1):
+                copyList1 = list1.poly[:]
+                copyList2 = list2.poly[:]
+                copyList3 = checkBigger(copyList1,copyList2)
+                copyList4 = checkSmaller(copyList1,copyList2)
+                if(len(copyList3) != 1) and (len(copyList4) != 1):
                         newListLen = len(copyList1) + len(copyList2) - 1
                         newList = [0] * newListLen
                         for i in range(0, len(copyList1)):
                                 for j in range(0, len(copyList2)):
                                         newList[i+j] = newList[i+j] + copyList1[i] * copyList2[j]
 
-                elif(len(copyList2) == 1):
+                elif(len(copyList4) == 1):
                         newList = [0] * len(copyList1)
                         for i in range(0, len(copyList1)):
                                 newList[i] = copyList1[i] * copyList2[0]
                                 
                 else:
-                        copyList1[0] = copyList1[0] * copyList2[0]
+                        copyList3[0] = copyList3[0] * copyList4[0]
                         newList= copyList1       
                 newPoly = polynom(newList)
                 return newPoly
@@ -93,7 +97,7 @@ class polynom(object):
         # takes the current polynomial and does the derivative.
         # returns: the list of the polynomial
         def drv(self):
-                copyList = self.poly
+                copyList = self.poly[:]
                 if(len(self.poly) > 1):
                         for i in range(0, len(self.poly)):
                                 copyList[i] = copyList[i] * (len(self.poly) - i - 1)
@@ -173,4 +177,6 @@ def checkSmaller(list1,list2):
                 return list1
         else:
                 return list2
+
+
 
