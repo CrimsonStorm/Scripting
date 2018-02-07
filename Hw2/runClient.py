@@ -20,32 +20,30 @@ def dread(whichFile,byteNum = None):
         #send request to server to read file
         #f = open(whichFile,r)
         assignedToPort = hash(whichFile) % len(allHosts)
-        s[assignedToPort].send("('read',whichFile,byteNum)") 
-        return s[assignedToPort].recv(1024)
+        s[assignedToPort].send('read ' + whichFile + ' ' + byteNum)
 
 def dwrite(whichFile, whatToWrite):
         #send request to server to write file
         assignedToPort = hash(whichFile) % len(allHosts)
-        s[assignedToPort].send("('write',whichFile,whatToWrite)")
-        return s[assignedToPort].recv(1024)
+        s[assignedToPort].send('write ' + whichFile + ' ' + whatToWrite)
 
 def dopen(whichFile, permissions = 'r'):
         # send request to server to open file
         assignedToPort = hash(whichFile) % len(allHosts)
-        s[assignedToPort].send("('open',whichFile)")
-        return s[assignedToPort].recv(1024)
+        s[assignedToPort].send('open ' + whichFile + ' ' + permissions)
 
 def dclose(whichFile):
         # send request to server to close file
         assignedToPort = hash(whichFile) % len(allHosts)
-        s[assignedToPort].send("('close',whichFile)")
-        return s[assignedToPort].recv(1024)
+        s[assignedToPort].send('close ' + whichFile)
 
 def main():
-	dInit(['pc6.cs.ucdavis.edu','pc16.cs.ucdavis.edu'],2500)
+	dInit(['pc47.cs.ucdavis.edu','pc48.cs.ucdavis.edu'],2500)
 	dopen('testFile.txt')
 	dwrite('testFile.txt','i am writing')
+	print 'closing'
 	dclose('testFile.txt')
+	print 'closed'
 
 
 if __name__ == '__main__':
