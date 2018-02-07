@@ -27,11 +27,13 @@ def main():
 
 	while(1):
 		data = con.recv(1024)
+		if data == '':
+			con.close()
+			break
 		print 'data is ' + data
 		print 'here'
 		data = data.split()
-		print 'after'
-		print 
+		print 'after' 
 		print data
 		f = getFile(data[1])
 		if   data[0] == 'read'  and f != None:
@@ -42,7 +44,7 @@ def main():
 		elif data[0] == 'write' and f != None:
 			print 'writing'
 			data = [data[0], data[1], data[2:]]
-			f.write(data[2])
+			write(data[2])
 		elif data[0] == 'open'  and f == None:
 			f = open(data[1],data[2])
 		elif data[0] == 'close' and f != None:

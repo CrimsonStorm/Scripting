@@ -35,11 +35,13 @@ def dopen(whichFile, permissions = 'r'):
 def dclose(whichFile):
         # send request to server to close file
         assignedToPort = hash(whichFile) % len(allHosts)
+	temp = 'close ' + whichFile
+	print temp
         s[assignedToPort].send('close ' + whichFile)
 
 def main():
 	dInit(['pc47.cs.ucdavis.edu','pc48.cs.ucdavis.edu'],2500)
-	dopen('testFile.txt')
+	dopen('testFile.txt','w')
 	dwrite('testFile.txt','i am writing')
 	print 'closing'
 	dclose('testFile.txt')
