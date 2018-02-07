@@ -25,25 +25,38 @@ def dInit(hostList,portNum):
         map(lambda x: allHosts.append(x), hostList)
 `       #for each hostlist, connect to each port
 
-def dread(whichFile):
+def dread(whichFile,byteNum = 0):
         #send request to server to read file
-        dopen(whichFile)
-        s.send('read')
-        s.send(whichFile)
-        return 0
+        #f = open(whichFile,r)
+        assignedToPort = hash(whichFile) % len(allHosts)
+        s[assignedToPort].send(('read',whichFile,byteNum)) 
+        return s.recv(1024)
 
-def dwrite(whichFile):
+def dwrite(whichFile, whatToWrite):
         #send request to server to write file
-        s.send('write')
-        s.send(whichFile)
-        return 0
+        assignedToPort = hash(whichFile) % len(allHosts)
+        s[assignedToPort].send(('write',whichFile,whatToWrite))
 
 def dopen(whichFile):
         # send request to server to open file
-        s.send('open')
-        return 0
+        assignedToPort = hash(whichFile) % len(allHosts)
+        s[assignedToPort].send(('open',whichFile))
 
 def dclose(whichFile):
         # send request to server to close file
-        s.send('close')
-        return 0
+        assignedToPort = hash(whichFile) % len(allHosts)
+        s[assignedToPort].send(('close',whichFile))
+
+
+
+#ServerCode
+#x = s.recieve()
+# if (x == 'read'):
+# s.send(x.read())
+# if (x == 'write'):
+#   while(1):
+#       f.write(x)
+# if (x == 'close'):
+# f.close()
+# if (x == 'open'):
+#   f = open(x)
