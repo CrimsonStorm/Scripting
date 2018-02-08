@@ -28,6 +28,10 @@ def main():
 	
 	while(1):
 		data = con.recv(4096)
+		if data == 'stop':
+			print 'stop!!'
+			con.close()
+			break
 		print 'data is ' + data
 		print 'here'
 		data = data.split()
@@ -58,9 +62,13 @@ def main():
 				print 'opened'
 				con.send('doneOpening')
 			elif data[0] == 'close' and f != None:
+				print 'a'
 				f.close()
+				print 'b'
 				f = None
+				print 'c'
 				con.send('doneClosing')
+				print 'd'
 
 if __name__ == '__main__':
     main()

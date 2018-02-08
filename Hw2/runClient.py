@@ -48,22 +48,28 @@ def dopen(whichFile, permissions = 'a+'):
 def dclose(whichFile):
         # send request to server to close file
         assignedToPort = hash(whichFile) % len(allHosts)
-        s[assignedToPort].send('close ' + whichFile)
-        while 1:
-                if(s[assignedToPort].recv(1024) == 'doneClosing'):
-                        break
-                
+        if whichFile == 'stop':
+		print 'yo stop'
+		for i in s:
+			i.send('stop')
+		for j in s:
+			j.close()
+	else:
+        	s[assignedToPort].send('close ' + whichFile)
+ 
 def main():
-        dInit(['pc47.cs.ucdavis.edu','pc48.cs.ucdavis.edu'],2500)
+        dInit(['pc46.cs.ucdavis.edu','pc47.cs.ucdavis.edu'],2243)
         dopen('testFile.txt')
         #f = dread('testFile.txt')
         #print f
-        #dwrite('testFile.txt','i am writing')
+        dwrite('testFile.txt','i am writing')
         dclose('testFile.txt')
         dopen('testFile.txt')
         f = dread('testFile.txt')
         print f
-        #dwrite('testFile2.txt','i am writing')
+        dwrite('testFile.txt','something different')
         dclose('testFile.txt')
+	print 'closed file!'
+	dclose('stop')
 if __name__ == '__main__':
         main()
