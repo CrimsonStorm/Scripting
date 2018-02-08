@@ -28,6 +28,7 @@ def main():
 	
 	while(1):
 <<<<<<< HEAD
+<<<<<<< HEAD
 		data = con.recv(4096)
 		print 'data is ' + data
 		print 'here'
@@ -70,6 +71,15 @@ def main():
 		print 'data is ' + data
 		print 'here'
 		data = data.split()
+=======
+		data = con.recv(1024)
+		if data == '':
+			con.close()
+			break
+		print 'data is ' + data
+		print 'here'
+		data = data.split()
+>>>>>>> df4222c4839cde7b6f0e9f5c4c52034f746c649e
 		print 'after' 
 		print data
 		f = getFile(data[1])
