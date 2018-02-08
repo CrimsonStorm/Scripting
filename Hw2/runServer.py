@@ -27,8 +27,6 @@ def main():
 	f = None
 	
 	while(1):
-<<<<<<< HEAD
-<<<<<<< HEAD
 		data = con.recv(4096)
 		print 'data is ' + data
 		print 'here'
@@ -63,41 +61,6 @@ def main():
 				f.close()
 				f = None
 				con.send('doneClosing')
-=======
-		data = con.recv(1024)
-		if data == '':
-			con.close()
-			break
-		print 'data is ' + data
-		print 'here'
-		data = data.split()
-=======
-		data = con.recv(1024)
-		if data == '':
-			con.close()
-			break
-		print 'data is ' + data
-		print 'here'
-		data = data.split()
->>>>>>> df4222c4839cde7b6f0e9f5c4c52034f746c649e
-		print 'after' 
-		print data
-		f = getFile(data[1])
-		if   data[0] == 'read'  and f != None:
-			if data[2] == None:
-				f.read()
-			else:
-				f.read(data[2])
-		elif data[0] == 'write' and f != None:
-			print 'writing'
-			data = [data[0], data[1], data[2:]]
-			write(data[2])
-		elif data[0] == 'open'  and f == None:
-			f = open(data[1],data[2])
-		elif data[0] == 'close' and f != None:
-			fileList.remove(f)
-			f.close()
->>>>>>> df4222c4839cde7b6f0e9f5c4c52034f746c649e
 
 if __name__ == '__main__':
     main()
