@@ -3,6 +3,16 @@ import sys, os, socket
 s = []
 allHosts = []
 
+def sysStart(hostList,portNum):
+        #if assuming in csif already
+        for i in hostList:
+                os.system('ssh %(i)s python runServer.py %(portnum)s' %{'i': i,'portnum': portNum})
+                
+def sysStop(hostList):
+        #Close all the sockets for the hosts
+        for i in s:
+                i.close()
+                
 def dInit(hostList,portNum):
         #Tell the server(manager) to start sysStart with the hostList and portnum
         global allHosts
@@ -49,7 +59,6 @@ def dclose(whichFile):
         # send request to server to close file
         assignedToPort = hash(whichFile) % len(allHosts)
         if whichFile == 'stop':
-                print 'yo stop'
                 for i in s:
                         i.send('stop')
                 for j in s:
@@ -57,19 +66,18 @@ def dclose(whichFile):
         else:
                 s[assignedToPort].send('close ' + whichFile)
  
-def main():
-        dInit(['pc47.cs.ucdavis.edu','pc48.cs.ucdavis.edu'],2500)
-        dopen('testFile.txt')
-        #f = dread('testFile.txt')
-        #print f
-        dwrite('testFile.txt','i am writing')
-        dclose('testFile.txt')
-        dopen('testFile.txt')
-        f = dread('testFile.txt')
-        print f
-        dwrite('testFile.txt','something different')
-        dclose('testFile.txt')
-        print 'closed file!'
-        dclose('stop')
-if __name__ == '__main__':
-        main()
+#def main():
+#        dInit(['pc46.cs.ucdavis.edu','pc47.cs.ucdavis.edu'],2243)
+#        dopen('testFile.txt')
+#        #f = dread('testFile.txt')
+#        #print f
+#        dwrite('testFile.txt','i am writing')
+#        dclose('testFile.txt')
+#        dopen('testFile.txt')
+#        f = dread('testFile.txt')
+#        print f
+#        dwrite('testFile.txt','something different')
+#        dclose('testFile.txt')
+#        dclose('stop')
+#if __name__ == '__main__':
+#        main()
