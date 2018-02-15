@@ -3,6 +3,11 @@ import sys, os, socket
 s = []
 allHosts = []
 
+def sysStop(hostList):
+        #Close all the sockets for the hosts
+        for i in s:
+                i.close()
+                
 def dInit(hostList,portNum):
         #Tell the server(manager) to start sysStart with the hostList and portnum
         global allHosts
@@ -23,10 +28,10 @@ def dread(whichFile,byteNum = 0):
         strByte = str(byteNum)
         s[assignedToPort].send('read ' + whichFile + ' ' + strByte)
         returnData = ''
-        while 1:
-                returnData = s[assignedToPort].recv(4096)
-                if(returnData!=None):
-                        break
+        #while 1:
+	returnData = s[assignedToPort].recv(4096)
+        #        if(returnData!=None):
+        #                break
               
         return returnData
 def dwrite(whichFile, whatToWrite):
@@ -48,28 +53,5 @@ def dopen(whichFile, permissions = 'a+'):
 def dclose(whichFile):
         # send request to server to close file
         assignedToPort = hash(whichFile) % len(allHosts)
-        if whichFile == 'stop':
-                print 'yo stop'
-                for i in s:
-                        i.send('stop')
-                for j in s:
-                        j.close()
-        else:
-                s[assignedToPort].send('close ' + whichFile)
+        s[assignedToPort].send('close ' + whichFile)
  
-def main():
-        dInit(['pc47.cs.ucdavis.edu','pc48.cs.ucdavis.edu'],2500)
-        dopen('testFile.txt')
-        #f = dread('testFile.txt')
-        #print f
-        dwrite('testFile.txt','i am writing')
-        dclose('testFile.txt')
-        dopen('testFile.txt')
-        f = dread('testFile.txt')
-        print f
-        dwrite('testFile.txt','something different')
-        dclose('testFile.txt')
-        print 'closed file!'
-        dclose('stop')
-if __name__ == '__main__':
-        main()

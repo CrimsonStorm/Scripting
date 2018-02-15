@@ -29,46 +29,37 @@ def main():
 	while(1):
 		data = con.recv(4096)
 		if data == 'stop':
-			print 'stop!!'
 			con.close()
 			break
-		print 'data is ' + data
-		print 'here'
 		data = data.split()
-		print 'after'
-		print data
 		sendData = ''
-		print f
 		if data != None:
 			if data[0] == 'read'  and f != None:
-				print 'reading'
 				if data[2] == '0':
 					sendData = f.read()
+					f.seek(0)
 					con.send(sendData)
 				else:
 					myInt = int(data[2])
-					sendData  = f.read(data[2])
+					sendData  = f.read(myInt)
 					con.send(sendData)
 			elif data[0] == 'write' and f != None:
 				strData = data[2:]
 				writeStr = ''
 				for i in strData:
 					writeStr += i
+					writeStr += ' '
 				f.write(writeStr )
 				f.flush()
+				f.seek(0)
 				con.send('doneWriting')
 			elif data[0] == 'open'  and f == None:
 				f = open(data[1],data[2])
-				print 'opened'
 				con.send('doneOpening')
 			elif data[0] == 'close' and f != None:
-				print 'a'
 				f.close()
-				print 'b'
 				f = None
-				print 'c'
 				con.send('doneClosing')
-				print 'd'
 
 if __name__ == '__main__':
     main()
