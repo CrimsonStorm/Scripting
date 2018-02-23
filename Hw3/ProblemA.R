@@ -17,9 +17,7 @@ makeAscendNums <- function(vec){
 }
 
 "+.ascendNums" <- function(x,x2){
-	xVec <- c(x)
-	x2Vec <- c(x2)
-	newVector = recursiveFunc(xVec ,x2Vec )
+	newVector = recursiveFunc(as.vector(x) ,as.vector(x2))
 	returnVec = makeAscendNums(newVector)
 	returnVec
 }
