@@ -1,7 +1,4 @@
 makeAscendNums <- function(vec){
-  if (is.vector(vec) == FALSE){
-    stop("not a vector")
-  }
   diff <- vec[-1] - vec[-length(vec)]
 	if(any(diff < 0)){
 		stop("not nondecreasing")
@@ -26,5 +23,5 @@ makeAscendNums <- function(vec){
     i = i + 1
   }
   u <- ifelse(rep(i > length(u), length(u) + length(v) - j + 1), c(u, v[j:length(v)]), u)
-  u
+  makeAscendNums(u)
 }
