@@ -1,4 +1,4 @@
-# PROJECT IS GOING TO SUCK
+jz# PROJECT IS GOING TO SUCK
 
 # Global Variables
 # TOTALRUNTIME = 0
@@ -11,7 +11,7 @@
 # Bigmemory SharedData
 # ResourceList = as.matrix()
 
-source();
+library(bigmemory)
 
 
 makeProcess <- (){
@@ -72,14 +72,11 @@ cancel <- function(X){
 
 # Do the simulation
 simulate(untilTime){
-
-while(TOTALRUNTIME < untilTIme){
-	# Run each thread and get time
-	
-	for(i in threads){
-		# Execute Run command in separate instances of R
-		
+	for(i in threadList){
+			makeResource()
+			makeProcess(untilTime)
 	}
+
 }
 
 
