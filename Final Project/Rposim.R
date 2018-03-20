@@ -1,4 +1,4 @@
-jz# PROJECT IS GOING TO SUCK
+library(bigmemory)
 
 # Global Variables
 # TOTALRUNTIME = 0
@@ -9,17 +9,20 @@ jz# PROJECT IS GOING TO SUCK
 # QueueLength = length(ProcessQueue)
 
 # Bigmemory SharedData
-# ResourceList = as.matrix()
+# data <- matrix()
+# At sim time call this
+# sharedData <- as.big.matrix(data, type="double", backingfile="m.bin", descriptorfile="data.desc")
 
-library(bigmemory)
 
 
-makeProcess <- (){
+
+makeProcess <- (untilTime){
+	# Initialize R instance
 
 }
 
 makeResource <-() {
-
+	# Initialize Environment? make this instance?
 }
 
 ## Initialize global variables to be used. (Not 100% sure if needed)
