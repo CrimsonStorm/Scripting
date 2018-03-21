@@ -1,0 +1,132 @@
+																Contents:
+	1. DES
+	2. Event-Oriented DES
+	3. Process-Oriented DES
+	4. Rposim
+	5. Simmer
+	6. Team member contributions
+		6.1 Write-up
+		6.2 Code
+	7. Appendix												
+			
+
+
+
+
+
+																1. DES
+	DES is discrete event simulation. The events that are being simulated are discontinous or discrete. We model real world situations of events on a smaller scale so that we can make a blueprint of what will happen in the actual event.
+
+
+
+
+
+																2. Event-Oriented DES
+	In Event-Oriented Des, one uses an event set which holds pending events in a queue. Each event has a certain simulation time attatched to it, and 
+
+
+
+
+																3. Process-Oriented DES
+Process-Oriented descrete event simulation differs from event 
+
+
+
+
+																4. Rposim
+###
+
+###
+
+Here are three worked out machine repair examples that show how our package works: 
+###Verbatim code
+
+### Machine Rep 1
+
+
+### Machine Rep 2
+
+
+### Machine Rep 3
+
+
+###
+
+We could use a TCP/IP approach in order to solve the issue of R having no threads, instead of shared-memory. This would involve using a 
+
+
+
+																5. Simmer
+
+
+
+
+																6. Team member contributions
+																6.1 Write-ups
+	1. DES - Joseph Shaw
+	2. Event-Oriented DES - Matt Medina
+	3. Process-Oriented Des - Joseph Shaw
+	4. Rposim - Dylon Dickinson, Joseph Shaw?
+	5. Simmer - Matt Medina, Joseph Shaw
+
+																6.2 Code
+	1. Rposim - Dylon Dickinson, Joseph Shaw, Matt Medina
+		1.1 RposimMachRep1.r - ?
+		1.2 RposimMachRep2.r - ?
+		1.3 RposimMachRep3.r - ?
+	2. SimmerMachRep1.r - Matt Medina, Joseph Shaw
+
+
+																7. Appendix
+																Rposim.r
+
+
+																RposimMachRep1.r
+
+
+
+
+																RposimMachRep2.r
+
+
+
+
+																RposimMachRep3.r
+
+
+
+
+
+																SimmerMachRep1.r
+		### SimmerMachRep1.r
+		#library(simmer)
+
+		#NUM_MACHINES <- 2  # Number of machines
+		#NUM_REPAIRPERSONS <- 2 # Number of repair people
+		#REPAIRRATE <- 1/0.5      # Reciprocal of mean repair time
+		#UPRATE <- 1/1.0       # Reciprocal of mean up time 
+		#SIM_TIME <- 10000     # Simulation time 
+
+		# setup
+		#set.seed(12345)
+		#env1 <- simmer()
+
+		#repair_person <- trajectory() %>%
+		  #seize("fix", 1) %>%
+		  #set_attribute("newUptime",function(){rexp(1,1/1.0)},global=TRUE) %>%
+		  #timeout(function() {ifelse(is.na(get_attribute(env1,"newUptime")),0,get_attribute(env1,"newUptime"))}) %>%
+		  #timeout(function(){rexp(1,REPAIRRATE)}) %>%
+		  #release("fix", 1) 
+		  
+		  #env1 %>%
+		  #add_resource("fix", NUM_MACHINES) %>%
+		  #add_generator("repair_person", repair_person, at(rep(0,NUM_REPAIRPERSONS))) %>%
+		  #add_generator("create_new_uptime", repair_person, function() sample(rexp(1,1/1.0), 1)) %>%
+		  # start the simulation
+		  #run(until = SIM_TIME)
+		  
+		#x = env1 %>% get_mon_attributes
+		#y = x$value
+		#z = sum(y)
+		#PercentUp = z / (NUM_MACHINES*SIM_TIME)
+		#print(paste0("Percent machines are up is: ", PercentUp))
