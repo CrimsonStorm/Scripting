@@ -5,15 +5,14 @@ pQ <- c()
 fQ <- c()
 data <- NULL
 
-setClass("Process", slots=c(pid="numeric", data="big.matrix"),prototype=list(pid=0))
+setClass("Process", slots=c(pid="numeric", d="big.matrix"),prototype=list(pid=0))
 
 setClass("Resource", representation(n="numeric"))
 
 # Initialize
 initialize <- function()
 {
-    #initialize big memory object
-    #data <<- as.big.matrix(d, type="double", backingfile="m.bin", descriptorfile="data.desc")
+    
 }
 
 # Used to indicate how much time to allocate to a thread
@@ -75,14 +74,17 @@ now <- function(X)
 # Do the simulation
 simulate(until)
 {
+    data <- big.matrix(length(pQ),3)
+    dput(describe(data), file="memPtr")
+    
     for (i in 1:length(pQ))
     {
         pQ[i]@pid <- i
-        #add a row to big.matrix
-        #data[i][1] <- 0
-        #data[i][2] <- 0
-        #data[i][3] <- 0
-        #open a new terminal and call fQ[i]
+        pQ[i]@d <- attach.big.matrix(dget("memPtr"))
+        pQ[i]@d[i][1] <- 0
+        pQ[i]@d[i][2] <- 0
+        pQ[i]@d[i][3] <- 0
+        system("")
     }
     while(data[1][2] < until)
     {
