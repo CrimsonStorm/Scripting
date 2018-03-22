@@ -1,0 +1,181 @@
+\documentclass[titlepage]{article}
+\author{\Large \newline Joseph Shaw\, Matt Medina\, Dylon Dickinson}
+\title{\Huge Discrete Event Simulation in R}
+
+\begin{document}
+	\maketitle
+	
+\clearpage
+
+
+\vspace{-1in}
+
+%Add Image
+%\includegraphics[scale=.60]{image.jpg}
+
+\tableofcontents
+
+\Large
+
+1 \hspace{0.1in} DES
+
+2 \hspace{0.1in} Event-Oriented DES
+
+3 \hspace{0.1in} Process-Oriented DES
+
+4 \hspace{0.1in} Rposim
+
+5 \hspace{0.1in} Simmer
+
+6 \hspace{0.1in} Team member contributions
+
+\hspace{0.25in} 6.1 \hspace{0.1in} Write-up
+
+\hspace{0.25in} 6.2 \hspace{0.1in} Code
+
+7 \hspace{0.1in} Appendix
+
+\clearpage
+
+
+
+
+\Large \textbf{What is DES?:} \normalsize
+DES is discrete event simulation. The events that are being simulated are discontinous or discrete. We model real world situations of events on a smaller scale so that we can make a blueprint of what will happen in the actual model. There are three general approaches to doing discrete event simulation, which are Activity, Event, and Process Oriented DES. We will look at two of them, Event-Oriented and Process Oriented DES. While they do the same thing, the two different methods of solving how to do DES are very different.
+
+$\newline$
+
+\Large \textbf{Event-Oriented DES:} \normalsize 
+Event-oriented discrete event simulation is built around a scheduling of events.  Events are stored in an event list and executed in an ascending order of scheduled time.  Each event is given an event type so that each type can be processed according to the specifications of the event.  As with all discrete event simulation, use of a global time is necessary to keep a running track of variable times and number of event occurrences, so that statistical data may be gathered at the end of the simulation.
+
+$\newline$
+
+The DES package for R uses an event-oriented DES.  The events are stored in an event list attribute contained within a R environment named simlist.  The event list in the DES package is represented as a matrix that stores 1 event per row, with the first column being the event time and the second column being the event type.  The user has the capability of appending more user defined columns for other event purposes that may be useful for the discrete event simulation.  Each event type is signified by the use of an R numeric, which is crucial for the purposes of distinguishing between events so that they may be handled accordingly.
+
+$\newline$
+
+\Large \textbf{Process-Oriented DES:} \normalsize 
+Process-Oriented discrete event simulation differs from Event-Oriented discrete event simulation in that it uses threading in order to allow multiple processes to interact at the same time. Processes can be in different states, such as running(or active), ready, idle, or terminated. The simulation will run until each process has terminated, with each process given a certain amount of time that it needs to run for. Generally
+
+$\newline$
+
+\Large \textbf{The Rposim Package:} \normalsize 
+Here are three worked out machine repair examples that show how our package works:
+$\newline$
+
+Machine Rep 1
+
+Machine Rep 2
+
+Machine Rep 3
+$\newline$
+
+We could use a TCP/IP approach in order to solve the issue of R having no threads, instead of shared-memory. This would involve using a 
+
+
+Differences
+
+$\newline$
+
+\Large \textbf{The Simmer Package:} \normalsize
+TEXT HERE
+
+$\newline$
+
+\Large \textbf{Contributions:} \normalsize 
+TEXT HERE
+
+\hspace{0.25in} Writeups:
+
+\hspace{0.5in}	DES - Joseph Shaw
+
+\hspace{0.5in}	Event-Oriented DES - Matt Medina
+
+\hspace{0.5in}	Process-Oriented Des - Joseph Shaw
+
+\hspace{0.5in}	The Rposim Package - Dylon Dickinson, Joseph Shaw?
+
+\hspace{0.5in}	The Simmer Package - Matt Medina
+
+$\newline$
+
+\hspace{0.25in} Code:
+
+\hspace{0.5in}	1. Rposim - Dylon Dickinson, Joseph Shaw, Matt Medina
+
+\hspace{0.75in}	1.1 RposimMachRep1.r - ?
+
+\hspace{0.75in}	1.2 RposimMachRep2.r - ?
+
+\hspace{0.75in}	1.3 RposimMachRep3.r - ?
+
+\hspace{0.5in}	2. SimmerMachRep1.r - Matt Medina, Joseph Shaw
+
+$\newline$
+
+\clearpage
+
+
+
+
+\Large \textbf{Appendix:} \normalsize
+
+\begin{verbatim}
+Rposim.r
+
+
+RposimMachRep1.r
+
+
+RposimMachRep2.r
+
+
+RposimMachRep3.r
+
+\end{verbatim}
+
+\clearpage
+
+\begin{verbatim}
+SimmerMachRep1.r
+
+    library(simmer)
+
+    NUM_MACHINES <- 2  # Number of machines
+    NUM_REPAIRPERSONS <- 2 # Number of repair people
+    REPAIRRATE <- 1/0.5    # Reciprocal of mean repair time
+    UPRATE <- 1/1.0        # Reciprocal of mean up time 
+    SIM_TIME <- 10000      # Simulation time 
+
+    #setup
+    set.seed(12345)
+    env1 <- simmer()
+
+    repair_person <- trajectory() %>%
+        seize("fix", 1) %>%
+        set_attribute("newUptime",function(){rexp(1,1/1.0)},global=TRUE) %>%
+        timeout(function() {ifelse(is.na(get_attribute(env1,"newUptime")),0,
+            get_attribute(env1,"newUptime"))}) %>%
+        timeout(function(){rexp(1,REPAIRRATE)}) %>%
+        release("fix", 1) 
+
+    env1 %>%
+        add_resource("fix", NUM_MACHINES) %>%
+        add_generator("repair_person", repair_person, at(rep(0,NUM_REPAIRPERSONS))) %>%
+        add_generator("create_new_uptime", repair_person, 
+            function() sample(rexp(1,1/1.0), 1)) %>%
+
+    # start the simulation
+    run(until = SIM_TIME)
+
+    x = env1 %>% get_mon_attributes
+    y = x$value
+    z = sum(y)
+    PercentUp = z / (NUM_MACHINES*SIM_TIME)
+    print(paste0("Percent machines are up is: ", PercentUp))
+
+\end{verbatim}
+
+\clearpage
+
+\end{document}
