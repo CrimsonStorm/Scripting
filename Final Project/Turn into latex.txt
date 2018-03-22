@@ -15,7 +15,7 @@
 
 
 																1. DES
-	DES is discrete event simulation. The events that are being simulated are discontinous or discrete. We model real world situations of events on a smaller scale so that we can make a blueprint of what will happen in the actual event.
+	DES is discrete event simulation. The events that are being simulated are discontinous or discrete. We model real world situations of events on a smaller scale so that we can make a blueprint of what will happen in the actual model. There are three general approaches to doing discrete event simulation, which are Activity, Event, and Process Oriented DES. We will look at two of them, Event-Oriented and Process Oriented DES. While they do the same thing, the two different methods of solving how to do DES are very different.
 
 
 
@@ -28,7 +28,7 @@
 
 
 																3. Process-Oriented DES
-Process-Oriented descrete event simulation differs from event 
+	Process-Oriented descrete event simulation differs from Event-Oriented discrete event simulation in that it uses threading in order to allow multiple processes to interact at the same time. Processes can be in different states, such as running(or active), ready, idle, or terminated. The simulation will run until each process has terminated, with each process given a certain amount of time that it needs to run for. Generally 
 
 
 
@@ -55,7 +55,7 @@ Here are three worked out machine repair examples that show how our package work
 We could use a TCP/IP approach in order to solve the issue of R having no threads, instead of shared-memory. This would involve using a 
 
 
-
+### Differences
 																5. Simmer
 
 
@@ -67,7 +67,7 @@ We could use a TCP/IP approach in order to solve the issue of R having no thread
 	2. Event-Oriented DES - Matt Medina
 	3. Process-Oriented Des - Joseph Shaw
 	4. Rposim - Dylon Dickinson, Joseph Shaw?
-	5. Simmer - Matt Medina, Joseph Shaw
+	5. Simmer - Matt Medina
 
 																6.2 Code
 	1. Rposim - Dylon Dickinson, Joseph Shaw, Matt Medina
