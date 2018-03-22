@@ -6,7 +6,7 @@ REPAIRRATE <- 1/0.5     # Average amount of time to repair a machine
 UPRATE <- 1/1.0       	# Average amount of time the machine is working
 SIM_TIME <- 10000     	# Total simulation time
 
-set.seed(12345)			# Set
+set.seed(12345)			# Set seed
 env1 <- simmer()		# Instantiate the simulated environment
 
   # Setup trajectory to simulate a repair event
