@@ -1,36 +1,43 @@
 library(bigmemory)
+library(methods)
 
 #globals
 pQ <- c()
 fQ <- c()
-data <- NULL
+data <- big.matrix(1,3,init=0.0)
+numProcs <- 0
 
-setClass("Process", slots=c(pid="numeric", d="big.matrix"),prototype=list(pid=0))
+setClass("Process", slots=c(pid="numeric"),prototype=list(pid=0))
 
 setClass("Resource", representation(n="numeric"))
 
 # Initialize
 initialize <- function()
 {
-    
+    #double the number of rows in data
+    print(data[,])
+    data <<- as.big.matrix(rbind(as.matrix(data),matrix(0,nrow=dim(data)[1],ncol=3)))
+    print(data[,])
+    dput(describe(data),file="memPtr")
+    print("end of init")
 }
 
 # Used to indicate how much time to allocate to a thread
 yield_hold <- function(p, holdTime)
 {
-    data[p@pid][2] <- 1
-	  data[p@pid][3] <- data[1][2] + holdTime
-    data[p@pid][1] <- 1 
-    while(data[p@pid][1] == 1)
-    {
-        #busy wait
-    }
-} 
+    print("in yield")
+    if(p@pid == 0) {p@pid <- numProcs + 1}
+    if(p@pid > dim(data)[1]) { initialize() }
+    data[p@pid,2] <<- 1
+    data[p@pid,3] <<- data[1,2] + holdTime
+    data[p@pid,1] <<- 1
+    #create a thread so it can wait
+    system(paste("echo \"source('Rposim.R')\ndata <- attach.big.matrix(dget('memPtr'))\nwhile(data[",p@pid,",1]==1){data <- attach.big.matrix(dget('memPtr'))}\" | R --slave", collapse=""))
+}
 
 # Cause a thread to join a queue for a given resource and use if no other threads in queue
 yield_request <- function(resource)
 {
-    ProcessQueue = c(ProcessQueue,resource)
 
 
 }
@@ -50,59 +57,57 @@ yield_passivate <-function()
 # Mark a thread runnable when first created
 activate <- function(p, f)
 {
+print("in activate")
+    numProcs <<- numProcs + 1
+    if(p@pid == 0) {p@pid <- numProcs + 1}
+    if(p@pid > dim(data)[1])
+    {
+        initialize()
+    }
+    data[2,1] <<- 0
+    data[2,2] <<- 0
+    data[2,3] <<- 0
     pQ <- c(pQ, p)
     fQ <- c(fQ, f)
+    print("after activate")
 }
 
 # Awakens a previously-passivated thread.
-reactivate <- function(X)
+reactivate <- function()
 {
 
 }
 
 # Cancels all the events associated with a previously-passivated thread.
-cancel <- function(X)
+cancel <- function()
 {
 	
 }
 
-now <- function(X)
+now <- function()
 {
-    data[1][2]  #current time
+    data[1,2]  #current time
 }
 
 # Do the simulation
-simulate(until)
+simulate <- function(until)
 {
-    data <- big.matrix(length(pQ),3)
-    dput(describe(data), file="memPtr")
-    
-    for (i in 1:length(pQ))
-    {
-        pQ[i]@pid <- i
-        pQ[i]@d <- attach.big.matrix(dget("memPtr"))
-        pQ[i]@d[i][1] <- 0
-        pQ[i]@d[i][2] <- 0
-        pQ[i]@d[i][3] <- 0
-        system("")
-    }
-    while(data[1][2] < until)
+print("in simulate")
+    while(data[1,2] < until)
     {
         m <- as.matrix(data)
-        minP <- which.min(subset(m, m[,1] == 1)[,3]) #gets waiting proc with min time
-        data[1][2] <- minp[3]  #update total time
+        minP <- which.min(subset(m, m[,1] == 1)[,3]) #get waiting proc with min time
+        data[1,2] <- data[minP,3]  #update total time
         
         if(minP[2] == 1)
         {
-            #handle yield_hold
+            data[minP,1] <- 0
         } else if(minP[2] == 2)
         {
             #handle yield_request
-        }
         } else if(minP[2] == 3)
         {
             #handle yield_release
-        }
         } else if(minP[2] == 4)
         {
             #handle yield_passivate

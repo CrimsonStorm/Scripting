@@ -1,46 +1,54 @@
-#RposimMachRep1.r
+#RposimMachRep1.R
 
-library(Rposim)
-import random
+source("Rposim.R")
+
 #global variables
-	set.seed(12345)
-	TotalTime = c(0.0)
-#class MachineClass(SimPy.Simulation.Process):
-	UpRate = c(1/1.0) # reciprocal of mean up time
-	RepairRate = c(1/0.5) # reciprocal of mean repair time
-	NextID = c(0) # next available ID number for MachineClass objects
-	TotalUpTime = c(0.0) # total up time for all machines
-	#print(TotalUpTime)
-	#def __init__(self): # required constructor
-		#SimPy.Simulation.Process.__init__(self) # must call parent constructor
-		# instance variables
-		StartUpTime = 0.0 # time the current up period started
-		 # ID for this MachineClass object
-		#MachineClass.NextID += 1
-Run = function(): # required constructor
-		while 1:
-			# record current time, now(), so can see how long machine is up
-			StartUpTime = now()
-			# hold for exponentially distributed up time
-			UpTime = rexp(1,UpRate)
-			yield_hold(UpTime) # simulate UpTime
-			TotalUpTime += .now() - StartUpTime
-			RepairTime = rexp(1,RepairRate)
-			# hold for exponentially distributed repair time
-			yield_hold(RepairTime)
-			#print MachineClass.TotalUpTime
-def main():
-	#SimPy.Simulation.initialize() # required
+UpRate = 1/1.0 # reciprocal of mean up time
+RepairRate = 1/0.5 # reciprocal of mean repair time
+NextID = 0 # next available ID number for MachineClass objects
+TotalUpTime = 0.0 # total up time for all machines
+
+MachineClass <- setRefClass("MachineClass",
+fields = list(StartUpTime="numeric",ID="numeric"),
+contains = "Process",
+methods = list(
+initialize = function()
+{
+    .self$StartUpTime <<- 0.0
+    .self$ID <<- NextID
+    NextID <<- NextID + 1
+},
+Run = function()
+{
+		while(1)
+    {  
+        # record current time, now(), so can see how long machine is up
+        .self$StartUpTime <- now()
+        # hold for exponentially distributed up time
+        UpTime <- rexp(1,UpRate)
+        yield_hold(.self, UpTime) # simulate UpTime
+        TotalUpTime <<- TotalUpTime + now() - .self$StartUpTime
+        RepairTime <- rexp(1,RepairRate)
+        # hold for exponentially distributed repair time
+        yield_hold(.self, RepairTime)
+        #print MachineClass.TotalUpTime
+    }
+}))
+main <- function()
+{
+	  initialize()
     # set up the two machine threads
-	for I in range(2):
+    for(i in 1:2)
+    {
         # create a MachineClass object
-		#M = MachineClass()
-		activate(Run()) # required
-        # run until simulated time 10000
-		MaxSimtime = 10000.0
-	simulate(MaxSimtime) # required
-	#print(MachineClass.TotalUpTime)
-	GTotalTime += TotalUpTime
+        M <- MachineClass()
+        activate(M,M$Run()) # required
+    }
+    # run until simulated time 10000
+    MaxSimtime = 10000.0
+    simulate(MaxSimtime) # required
 		
-	print "the percentage of up time was", \
-	TotalTime/(2*MaxSimtime)
+    paste("the percentage of up time was ", TotalUpTime/(2*MaxSimtime))
+ }
+ 
+ main()
