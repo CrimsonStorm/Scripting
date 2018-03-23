@@ -1,5 +1,5 @@
-function () 
-{
-    b <- 5
-    b
-}
+load('env.RData')
+load('saveP.RData')
+library(methods)
+library(bigmemory)
+p$Run()

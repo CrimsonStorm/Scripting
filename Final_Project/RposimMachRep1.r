@@ -2,11 +2,14 @@
 
 source("Rposim.R")
 
+
 #global variables
-UpRate = 1/1.0 # reciprocal of mean up time
-RepairRate = 1/0.5 # reciprocal of mean repair time
-NextID = 0 # next available ID number for MachineClass objects
-TotalUpTime = 0.0 # total up time for all machines
+#UpRate = 1/1.0 # reciprocal of mean up time
+#RepairRate = 1/0.5 # reciprocal of mean repair time
+#NextID = 0 # next available ID number for MachineClass objects
+#TotalUpTime = 0.0 # total up time for all machines
+
+globals <- NULL
 
 MachineClass <- setRefClass("MachineClass",
 fields = list(StartUpTime="numeric",ID="numeric"),
@@ -15,8 +18,9 @@ methods = list(
 initialize = function()
 {
     .self$StartUpTime <<- 0.0
-    .self$ID <<- NextID
-    NextID <<- NextID + 1
+    .self$ID <<- globals[1,3]
+    globals[1,3] <<- globals[1,3] + 1
+    callSuper()
 },
 Run = function()
 {
@@ -26,10 +30,10 @@ Run = function()
         # record current time, now(), so can see how long machine is up
         .self$StartUpTime <- now()
         # hold for exponentially distributed up time
-        UpTime <- rexp(1,UpRate)
+        UpTime <- rexp(1,globals[1,1])
         yield_hold(.self, UpTime) # simulate UpTime
-        TotalUpTime <<- TotalUpTime + now() - .self$StartUpTime
-        RepairTime <- rexp(1,RepairRate)
+        globals[1,4] <<- globals[1,4] + now() - .self$StartUpTime
+        RepairTime <- rexp(1,globals[1,2])
         # hold for exponentially distributed repair time
         yield_hold(.self, RepairTime)
         #print MachineClass.TotalUpTime
@@ -38,7 +42,8 @@ Run = function()
 }))
 main <- function()
 {
-	  initialize()
+print("top of main")
+	  initialize(c(1/1.0, 1/0.5, 0, 0.0))
     # set up the two machine threads
     for(i in 1:2)
     {
@@ -50,7 +55,7 @@ main <- function()
     MaxSimtime = 10000.0
     simulate(MaxSimtime) # required
 		
-    paste("the percentage of up time was ", TotalUpTime/(2*MaxSimtime))
+    print(paste("the percentage of up time was ", TotalUpTime/(2*MaxSimtime)))
  }
  
  main()

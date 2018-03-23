@@ -7,24 +7,32 @@ fQ <- c()
 data <- big.matrix(1,3,init=0.0)
 numProcs <- 0
 
-setRefClass("Process", fields=list(pid="numeric"),
+setRefClass("Process",
+fields=list(pid="numeric"),
 methods = list(
 initialize = function()
 {
-    
     .self$pid = 0
-})
+}))
 
-setRefClass("Resource", fields=list(n="numeric"))
+setRefClass("Resource",
+fields=list(n="numeric"))
 
 # Initialize
-initialize <- function()
+initialize <- function(g=c())
 {
+print("top of init")
     #double the number of rows in data
-    print(data[,])
     data <<- as.big.matrix(rbind(as.matrix(data),matrix(0,nrow=dim(data)[1],ncol=3)))
-    print(data[,])
     dput(describe(data),file="memPtr")
+    
+    if(length(g) > 100 || length(g) == 0)
+    {
+    }else
+    {
+        globals <<- as.big.matrix(matrix(g,nrow=1,ncol=length(g)))
+        dput(describe(globals),file="globals")
+    }
     print("end of init")
 }
 
@@ -38,20 +46,8 @@ yield_hold <- function(p, holdTime)
     data[p$pid,3] <<- data[1,2] + holdTime
     data[p$pid,1] <<- 1
     
-    dd <- paste("while(data[",p$pid,",1]==1){data <- attach.big.matrix(dget('memPtr'))}", collapse="")
-    fileConn<-file("scr.R")
-    writeLines(c("source('Rposim.R')","data <- attach.big.matrix(dget('memPtr'))",dd), fileConn)
-    close(fileConn)
+    while(data[p$pid,1] == 1) {data <- attach.big.matrix(dget('memPtr'))}
     
-    print(data)
-    #create a thread so it can wait
-    #system("Rscript scr.R")
-    system("R CMD BATCH scr.R out.txt &")
-    #system(paste("echo \"source('Rposim.R')\ndata <- attach.big.matrix(dget('memPtr'))\nwhile(data[",p$pid,",1]==1){data <- attach.big.matrix(dget('memPtr'))}\" | R --slave", collapse=""))
-    if(numProcs == 0)
-    {
-        activate(p,f)
-    }
     print("end of yield")
 }
 
@@ -77,22 +73,20 @@ yield_passivate <-function()
 # Mark a thread runnable when first created
 activate <- function(p)
 {
-print("in activate")
+    print("in activate")
+    print(p$pid)
     numProcs <<- numProcs + 1
     if(p$pid == 0) {p$pid <- numProcs + 1}
     if(p$pid > dim(data)[1])
     {
         initialize()
     }
-    data[p$pid,1] <<- 0
-    data[p$pid,2] <<- 0
-    data[p$pid,3] <<- 0
     pQ <- c(pQ, p)
-    fQ <- c(fQ, f)
+    save.image("env.RData")
+    save(p,file="saveP.RData")
     
-    dd <- paste("p <- ",p$pid, collapse="")
     fileConn<-file("scr.R")
-    writeLines(c("source('Rposim.R')",deparse(p$Run),"data <- attach.big.matrix(dget('memPtr'))","p <- "), fileConn)
+    writeLines(c("load('env.RData')","load('saveP.RData')","library(methods)","library(bigmemory)","p$Run()"), fileConn)
     close(fileConn)
     
     system("R CMD BATCH scr.R out.txt &")
@@ -116,6 +110,7 @@ now <- function()
 {
     print("start of now")
     data[1,2]  #current time
+    print("end of now")
 }
 
 # Do the simulation
@@ -126,23 +121,28 @@ print("in simulate")
     {
         m <- as.matrix(data)
         minP <- which.min(subset(m, m[,1] == 1)[,3]) #get waiting proc with min time
-        data[1,2] <- data[minP,3]  #update total time
         
-        if(minP[2] == 1)
+        if(length(minP) != 0)
         {
-            data[minP,1] <- 0
-        } else if(minP[2] == 2)
-        {
-            #handle yield_request
-        } else if(minP[2] == 3)
-        {
-            #handle yield_release
-        } else if(minP[2] == 4)
-        {
-            #handle yield_passivate
-        } else if(minP[2] == 5)
-        {
-            #handle reactivate???
+            data[1,2] <- data[minP,3]  #update total time
+            
+            print(data)
+            if(minP[2] == 1)
+            {
+                data[minP,1] <- 0
+            } else if(minP[2] == 2)
+            {
+                #handle yield_request
+            } else if(minP[2] == 3)
+            {
+                #handle yield_release
+            } else if(minP[2] == 4)
+            {
+                #handle yield_passivate
+            } else if(minP[2] == 5)
+            {
+                #handle reactivate???
+            }
         }
         print("bottom of sim loop")
     }
