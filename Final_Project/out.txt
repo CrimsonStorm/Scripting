@@ -28,24 +28,6 @@ The following object is masked _by_ ‘.GlobalEnv’:
     initialize
 
 > library(bigmemory)
+> data <- attach.big.matrix(dget('memPtr'))
+> globals <- attach.big.matrix(dget('globals'))
 > p$Run()
-[1] "top of machine loop"
-[1] "start of now"
-
- *** caught segfault ***
-address 0x10, cause 'memory not mapped'
-
-Traceback:
- 1: .Call(`_bigmemory_CGetNrow`, bigMatAddr)
- 2: CGetNrow(x@address)
- 3: nrow(x)
- 4: nrow(x)
- 5: CCleanIndices(as.double(i), as.double(nrow(x)))
- 6: GetElements.bm(x, i, j)
- 7: .local(x, i, j, ..., drop)
- 8: data[1, 2]
- 9: data[1, 2]
-10: print(data[1, 2])
-11: now()
-12: p$Run()
-An irrecoverable exception occurred. R is aborting now ...

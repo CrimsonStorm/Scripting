@@ -26,7 +26,7 @@ Run = function()
 {
 		while(1)
     {  
-    print("top of machine loop")
+    #print("top of machine loop")
         # record current time, now(), so can see how long machine is up
         .self$StartUpTime <- now()
         # hold for exponentially distributed up time
@@ -36,13 +36,13 @@ Run = function()
         RepairTime <- rexp(1,globals[1,2])
         # hold for exponentially distributed repair time
         yield_hold(.self, RepairTime)
-        #print MachineClass.TotalUpTime
-        print("bottom of machine loop")
+        ##print MachineClass.TotalUpTime
+        #print("bottom of machine loop")
     }
 }))
 main <- function()
 {
-print("top of main")
+#print("top of main")
 	  initialize(c(1/1.0, 1/0.5, 0, 0.0))
     # set up the two machine threads
     for(i in 1:2)
@@ -52,10 +52,10 @@ print("top of main")
         activate(M) # required
     }
     # run until simulated time 10000
-    MaxSimtime = 10000.0
+    MaxSimtime = 100.0
     simulate(MaxSimtime) # required
 		
-    print(paste("the percentage of up time was ", TotalUpTime/(2*MaxSimtime)))
+    print(paste("the percentage of up time was ", globals[1,4]/(2*MaxSimtime)))
  }
  
  main()
