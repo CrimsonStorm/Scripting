@@ -1,8 +1,0 @@
-new("big.matrix.descriptor"
-    , description = structure(list(sharedType = "SharedMemory", sharedName = "xLEcK", 
-    totalRows = 2L, totalCols = 3L, rowOffset = c(0, 2), colOffset = c(0, 
-    3), nrow = 2, ncol = 3, rowNames = NULL, colNames = NULL, 
-    type = "double", separated = FALSE), .Names = c("sharedType", 
-"sharedName", "totalRows", "totalCols", "rowOffset", "colOffset", 
-"nrow", "ncol", "rowNames", "colNames", "type", "separated"))
-)

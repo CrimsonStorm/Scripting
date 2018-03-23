@@ -22,6 +22,7 @@ Run = function()
 {
 		while(1)
     {  
+    print("top of machine loop")
         # record current time, now(), so can see how long machine is up
         .self$StartUpTime <- now()
         # hold for exponentially distributed up time
@@ -32,6 +33,7 @@ Run = function()
         # hold for exponentially distributed repair time
         yield_hold(.self, RepairTime)
         #print MachineClass.TotalUpTime
+        print("bottom of machine loop")
     }
 }))
 main <- function()
@@ -42,7 +44,7 @@ main <- function()
     {
         # create a MachineClass object
         M <- MachineClass()
-        activate(M,M$Run()) # required
+        activate(M) # required
     }
     # run until simulated time 10000
     MaxSimtime = 10000.0
