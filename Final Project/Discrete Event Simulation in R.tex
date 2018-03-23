@@ -67,11 +67,23 @@ DES is discrete event simulation. The events that are being simulated are discon
 $\newline$
 
 \Large \textbf{Event-Oriented DES:} \normalsize 
-Event-oriented discrete event simulation is built around a scheduling of events.  Events are stored in an event list and executed in an ascending order of scheduled time.  Each event is given an event type so that each type can be processed according to the specifications of the event.  As with all discrete event simulation, use of a global time is necessary to keep a running track of variable times and number of event occurrences, so that statistical data may be gathered at the end of the simulation.
+Event-oriented discrete event simulation is built around a scheduling of events.  Events are stored in an event list and executed in an ascending order of scheduled time.  Each event is given an event type so that each type can be processed according to the specifications of the event.  As with all discrete event simulation, use of a global time is necessary to keep a running track of variable times and number of event occurrences, so that statistical data may be calculated at the end of the simulation.
 
 $\newline$
 
-The DES package for R uses an event-oriented DES.  The events are stored in an event list attribute contained within a R environment named simlist.  The event list in the DES package is represented as a matrix that stores 1 event per row, with the first column being the event time and the second column being the event type.  The user has the capability of appending more user defined columns for other event purposes that may be useful for the discrete event simulation.  Each event type is signified by the use of an R numeric, which is crucial for the purposes of distinguishing between events so that they may be handled accordingly.
+The DES package for R uses an event-oriented DES.  The events are stored in an event list component contained within a R environment named simlist.  Use of an R environment variable allows for simlist components to be altered through use of functions, rather than having to reassign them. The event list in the DES package is represented as a matrix that stores 1 event per row, with the first column being the event time and the second column being the event type.  The user has the capability of appending more user defined columns for other event purposes that may be useful for the discrete event simulation.  One of the great things about the event list in the DES.r package is that the events don't need to be sorted in time ascending order, even though the events must be processed in time ascending order.  This is currently the default for event processing in the DES package, which makes use of R's which.min() function to allow for processing the next scheduled event, without the significant performance cost of sorting. The DES package for R also has an option for pre-generating arrival events, which makes use of a time-ordered list of arrivals.
+
+$\newline$
+
+Each event type is signified by the use of an R numeric, which is crucial for the purposes of distinguishing between events so that they may be handled accordingly.  This handling of event types is made available through use of a user supplied react() function in the application code.  This react() function signifies how event types are processed, and just as importantly, how new events are to be created.
+
+$\newline$
+
+The global time is logged and updated through the simlist component currtime.  Among other components for simlist is the timelim and dbg components. The former is used to store the maximum simulated time, whereas the latter is a nifty tool for debugging that allows for single stepping and on-screen event printing.
+
+$\newline$
+
+To setup application code that makes use of DES.r, the user must setup an instance of DES.r with any application-specific components needed in simlist.  The user must also setup the react() function to handle and create new events, as mentioned above.  The user must then initialize the first events to take place in the simulation.  The initial events are then used in the mainloop provided in the DES package, so that they can process and trigger the next events to be created in an iterative fashion.  This iterative process continues processing and creating new events until the timelim is reached.
 
 $\newline$
 
@@ -99,7 +111,15 @@ Differences
 $\newline$
 
 \Large \textbf{The Simmer Package:} \normalsize
-TEXT HERE
+The Simmer package in R is a process-oriented discrete event simulator aimed at providing everything SimPy has to offer.  The current simulated time is stored in the environment and can be accessed through the use of Simmer's now() function.  Trajectories are much like the Run() function in SimPy, in the sense that they allow for the environment to set or update its attributes.  When setting an attribute within a trajectory, the global parameter must be set to 'TRUE' for the attribute to show up in the monitored attributes list within the simmer environment, once the simulation is complete.  The trajectory will only run for as many arrival events as you have, or until it reaches the maximum simulated time.  
+
+$\newline$
+
+The seize and release functions built into Simmer provide the same functionality as yield request and yield release in SimPy; they remove and add back a resource respectively.  These two functions are used within a trajectory, to keep track of which resources are (or are not) available.  For more tedious simulated environment setups, multiple trajectories can be used in conjunction with one another to utilize the same resources.  You can do this, although the use of more trajectories can make the simulation harder to follow.
+
+$\newline$
+
+Generators in Simmer are modeled after the generators provided in SimPy, although the fact that R doesn't provide functionality for threading makes them different.  To compensate for the lack of threading in R, Simmer's built in generators use an arrival event in conjunction with its timeout function.  This provides the functionality of a co-routine, which is the hallmark of generators in SimPy, and hence the "secret sauce" of Simmer.
 
 $\newline$
 
@@ -162,37 +182,51 @@ SimmerMachRep1.r
 
     library(simmer)
 
-    NUM_MACHINES <- 2  # Number of machines
-    NUM_REPAIRPERSONS <- 2 # Number of repair people
-    REPAIRRATE <- 1/0.5    # Reciprocal of mean repair time
-    UPRATE <- 1/1.0        # Reciprocal of mean up time 
-    SIM_TIME <- 10000      # Simulation time 
+    NUM_MACHINES <- 2  		    # Number of machines
+    NUM_REPAIRPERSONS <- 2 	# Number of repair people
+    REPAIRRATE <- 1/0.5     # Average amount of time to repair a machine
+    UPRATE <- 1/1.0        	# Average amount of time the machine is working
+    SIM_TIME <- 10000     	 # Total simulation time
 
-    #setup
-    set.seed(12345)
-    env1 <- simmer()
+    set.seed(12345)			 # Set seed
+    env1 <- simmer()		# Instantiate the simulated environment
 
+        # Setup trajectory to simulate a repair event
     repair_person <- trajectory() %>%
-        seize("fix", 1) %>%
+            # Removes a resource from of the current number of resources
+        seize("repair", 1) %>%
+            # Create new attribute with random uptime
         set_attribute("newUptime",function(){rexp(1,1/1.0)},global=TRUE) %>%
+            # Simulate time up for machine
         timeout(function() {ifelse(is.na(get_attribute(env1,"newUptime")),0,
             get_attribute(env1,"newUptime"))}) %>%
+            # Simulate time to be repaired
         timeout(function(){rexp(1,REPAIRRATE)}) %>%
-        release("fix", 1) 
+            # Add the resource back to the current number of resources
+        release("repair", 1)
 
+        # Setup the simulated environment
     env1 %>%
-        add_resource("fix", NUM_MACHINES) %>%
-        add_generator("repair_person", repair_person, at(rep(0,NUM_REPAIRPERSONS))) %>%
-        add_generator("create_new_uptime", repair_person, 
-            function() sample(rexp(1,1/1.0), 1)) %>%
+            # Adds repair resource for trajectory to pull from
+        add_resource("repair", NUM_MACHINES) %>%
+            # Add initial events for number of repair people
+        add_generator("repair_person", repair_person, at(rep(0,NUM_REPAIRPERSONS))) %>% 
+            # Makes arrival events at a randomly distributed rate
+        add_generator("create_new_uptime", repair_person, function() sample(rexp(1,1/1.0), 1)) %>%
 
-    # start the simulation
-    run(until = SIM_TIME)
+            # Start the simulation
+        run(until = SIM_TIME)
 
+
+        # Store all values of all attribues in the environment
     x = env1 %>% get_mon_attributes
+        # Store values of newUpTime
     y = x$value
+        # Sum all values of newUpTime
     z = sum(y)
+        # Calculate the percentage of upTime
     PercentUp = z / (NUM_MACHINES*SIM_TIME)
+        # Print the percentage of upTime
     print(paste0("Percent machines are up is: ", PercentUp))
 
 \end{verbatim}
